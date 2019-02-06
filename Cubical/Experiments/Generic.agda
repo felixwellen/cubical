@@ -6,11 +6,13 @@ open import Agda.Builtin.List
 
 open import Cubical.Core.Everything
 
-open import Cubical.Basics.Equiv
-open import Cubical.Basics.Nat
-open import Cubical.Basics.Int
-open import Cubical.Basics.Equiv
-open import Cubical.Basics.Univalence
+open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Univalence
+
+open import Cubical.Data.Nat
+open import Cubical.Data.Int
+open import Cubical.Data.Prod
 
 variable
   ℓ ℓ' : Level
@@ -86,13 +88,11 @@ want = (4  , "John"  , (5  , 30) , 1956)
      ∷ (42 , "Sun"   , (3  , 20) , 1980)   
      ∷ []
 
--- TODO: This is not proved by refl... Why??
--- test2 : eu ≡ want
--- test2 = {!!}
+test2 : eu ≡ want
+test2 = refl
 
--- TODO: This is also not proved by refl:
--- test2 : db ≡ convert (convert db)
--- test2 = {!!}
+test3 : db ≡ convert (convert db)
+test3 = refl
 
 
 ------------------------------------------------------------------------------
@@ -168,22 +168,6 @@ genCom1 = incSalary genCom
 
 -- The following definition of addition is very cool! We directly get
 -- that it's an equivalence. I will upstream it later.
-
--- First define transport and prove that it is an equivalence
-
-transport : ∀ {ℓ} {A B : Set ℓ} → A ≡ B → A → B
-transport p a = transp (λ i → p i) i0 a
-
-isEquivTransportRefl : ∀ {ℓ} (A : Set ℓ) → isEquiv (transport {ℓ} {A} {A} refl)
-isEquivTransportRefl {ℓ} A = isoToIsEquiv (transport refl) (transport refl) rem rem
-  where
-  rem : (x : A) → transport refl (transport refl x) ≡ x
-  rem x = compPath (cong (transport refl) (λ i → transp (λ _ → A) i x))
-                   (λ i → transp (λ _ → A) i x)
-  
-isEquivTransport : ∀ {ℓ} {A B : Set ℓ} (p : A ≡ B) → isEquiv (transport p)
-isEquivTransport {A = A} = J (λ y x → isEquiv (transport x)) (isEquivTransportRefl A)
-
 
 -- Compose sucPathInt with itself n times. Transporting along this
 -- will be addition, transporting with it backwards will be
