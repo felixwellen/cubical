@@ -19,7 +19,7 @@ variable
 
 swap : {A : Set ℓ} {B : Set ℓ'} → A × B → B × A
 swap (x , y) = (y , x)
-  
+
 swapInv : {A : Set ℓ} {B : Set ℓ'} → (xy : A × B) → swap (swap xy) ≡ xy
 swapInv xy = refl
 
@@ -50,6 +50,21 @@ test1refl = refl
 
 -- TODO: Why is the normalization producing such complicated output?
 
+-- Answer: transp and hcomp are implemented negatively for record
+-- types, so that's the normal form, normalization doesn't eta expand.
+
+-- You can get a better normal form like this:
+
+expand : ∀ {A : Set ℓ} {B : Set ℓ'} → A × B → A × B
+expand (x , y) = x , y
+
+map : ∀ {A : Set ℓ} {B : Set ℓ'} → (A → B) → List A → List B
+map f [] = []
+map f (x ∷ xs) = f x ∷ map f xs
+
+
+test1-5 : List (ℕ × ℕ)
+test1-5 = map expand test1
 
 ------------------------------------------------------------------------------
 --
@@ -93,7 +108,6 @@ test2 = refl
 
 test3 : db ≡ convert (convert db)
 test3 = refl
-
 
 ------------------------------------------------------------------------------
 --
