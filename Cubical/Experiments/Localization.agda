@@ -59,33 +59,50 @@ module first-approximation {ℓ} {A : Set ℓ} {B C : A → Set ℓ} (F : (a : A
             (sectionOfEquiv _ (YisLocal a)) (λ bₐ → rightInverse g (f bₐ)) cₐ
           rightInverse g (is-ext a f bₐ i) = snd
             (sectionOfEquiv _ (YisLocal a)) (λ bₐ → rightInverse g (f bₐ)) i bₐ
+            
+          {-
+            In the following module, a right inverse on the path spaces is constructed.
+            One square will be central:
 
-          equivCong : ∀ (a : A) → (f₁ f₂ : C a → Y)
-            → isEquiv (λ (p : f₁ ≡ f₂) → cong (λ (f : C a → Y) → f ∘ (F a)) p)
-          equivCong a g h = isEquivCong (_ , (YisLocal a))
+                g(ext a f (F a b)) ≡ h(ext a f (F a b))
+                      ≡                     ≡
+                     g(f b)        ≡       h(f b)
 
-          rightInverseCong : (g h : ℐ X → Y) → g ∘ α ≡ h ∘ α → g ≡ h
-          rightInverseCong _ _ q i (α x) = q i x
-          rightInverseCong g h q i (ext a f cₐ) = H i
-            where
-              H : g (ext a f cₐ) ≡ h (ext a f cₐ)
-              H j =
-                fst
-                  (sectionOfEquiv _
-                    (equivCong a
-                      (g ∘ (ext a f)) (h ∘ (ext a f))))
-                 (λ j b → ((λ i → g (is-ext a f b i))
-                         ∙ (λ i → rightInverseCong g h q i (f b))
-                         ∙ (λ i → h (is-ext a f b i)) ⁻¹) j)
-                 j cₐ 
-          rightInverseCong g h q i (is-ext a f bₐ j) = H j i
-            where
-              γ : ext a f (F a bₐ) ≡ f bₐ
-              γ = is-ext a f bₐ
+            We construct the upper equality ('H0') as a transport of the lower one ('H1').
+            This will make all the necessary degenrations fit in the induction below.
+            The last step deviates from the proof in the article. 
+          -}
+          module _ (g h : ℐ X → Y) (q : g ∘ α ≡ h ∘ α) where
+            module _ (a : A) (f : B a → ℐ X) where 
+              equivCong : isEquiv (λ (p : (g ∘ (ext a f)) ≡ (h ∘ (ext a f)))
+                             → cong (λ (f : C a → Y) → f ∘ (F a)) p)
+              equivCong = isEquivCong (_ , (YisLocal a))
 
-              H : (i : I) → g (γ i) ≡ h (γ i)
-              H = {!fst
-                  (sectionOfEquiv _
-                    (equivCong a
-                      (g ∘ (ext a f)) (h ∘ (ext a f))))!}
-
+              module _ (bₐ : B a) where
+                γ : ext a f (F a bₐ) ≡ f bₐ
+                γ = is-ext a f bₐ
+                
+                H0 : (H1 : g (f bₐ) ≡ h (f bₐ))
+                     → g(ext a f (F a bₐ)) ≡ h(ext a f (F a bₐ))
+                H0 H1 = transport (cong (λ z → g z ≡ h z) (sym γ)) H1
+              
+            rightInverseCong : g ≡ h
+            rightInverseCong i (α x) = q i x
+            rightInverseCong i (ext a f cₐ) = H i
+              where
+                Ylocal : g ∘ (ext a f) ∘ F a ≡ h ∘ (ext a f) ∘ F a
+                         → g ∘ (ext a f) ≡ h ∘ (ext a f)
+                Ylocal = fst (sectionOfEquiv _ (equivCong a f))
+              
+                H : g (ext a f cₐ) ≡ h (ext a f cₐ)
+                H j = Ylocal (λ i bₐ → H0 a f bₐ (λ j → rightInverseCong j (f bₐ)) i) j cₐ
+                
+            rightInverseCong i (is-ext a f bₐ j) = {!!} -- H j i
+              -- some degenerations still don't match up
+              where
+                p = γ a f bₐ
+                
+                H : (j : I) → g (p j) ≡ h (p j)
+                H j = transport
+                        (λ k → g (p (k ∧ j)) ≡ h (p (k ∧ j)))
+                        (H0 a f bₐ (λ k → rightInverseCong k (f bₐ)))
