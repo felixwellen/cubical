@@ -97,12 +97,13 @@ module first-approximation {ℓ} {A : Set ℓ} {B C : A → Set ℓ} (F : (a : A
                 H : g (ext a f cₐ) ≡ h (ext a f cₐ)
                 H j = Ylocal (λ i bₐ → H0 a f bₐ (λ j → rightInverseCong j (f bₐ)) i) j cₐ
                 
-            rightInverseCong i (is-ext a f bₐ j) = {!!} -- H j i
+            rightInverseCong i (is-ext a f bₐ j) = {!!} -- H' j i
               -- some degenerations still don't match up
               where
                 p = γ a f bₐ
                 
-                H : (j : I) → g (p j) ≡ h (p j)
-                H j = transport
-                        (λ k → g (p (k ∧ j)) ≡ h (p (k ∧ j)))
-                        (H0 a f bₐ (λ k → rightInverseCong k (f bₐ)))
+                H' : (j : I) → g (p j) ≡ h (p j)
+                H' j = transp
+                        (λ k → g (p ((~ k) ∨ j)) ≡ h (p ((~ k) ∨ j)))
+                        j
+                        (λ k → rightInverseCong k (f bₐ))
