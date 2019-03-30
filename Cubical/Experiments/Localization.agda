@@ -52,7 +52,7 @@ module first-approximation {ℓ} {A : Set ℓ} {B C : A → Set ℓ} (F : (a : A
     (record {
       s = rightInverse ;
       sec = λ f → refl ;
-      secCong = λ g h → {!!} , {!!}})))
+      secCong = λ g h → rightInverseCong g h , {!!}})))
     where rightInverse : (X → Y) → (ℐ X → Y)
           rightInverse g (α x) = g x
           rightInverse g (ext a f cₐ) = fst
@@ -97,8 +97,17 @@ module first-approximation {ℓ} {A : Set ℓ} {B C : A → Set ℓ} (F : (a : A
                 H : g (ext a f cₐ) ≡ h (ext a f cₐ)
                 H j = Ylocal (λ i bₐ → H0 a f bₐ (λ j → rightInverseCong j (f bₐ)) i) j cₐ
                 
-            rightInverseCong i (is-ext a f bₐ j) = {!!} -- H' j i
-              -- some degenerations still don't match up
+            rightInverseCong i (is-ext a f bₐ j) =
+              hcomp
+                (λ k → λ
+                  { (j = i0) → λ i →
+                    snd (sectionOfEquiv _ (equivCong a f))
+                      (λ i bₐ → H0 a f bₐ (λ j → rightInverseCong j (f bₐ)) i)
+                      (~ k) i bₐ
+                  ; (j = i1) → λ i → rightInverseCong i (f bₐ)
+                  })
+                (H' j)
+                i
               where
                 p = γ a f bₐ
                 
