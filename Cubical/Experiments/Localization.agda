@@ -52,7 +52,7 @@ module first-approximation {ℓ} {A : Set ℓ} {B C : A → Set ℓ} (F : (a : A
     (record {
       s = rightInverse ;
       sec = λ f → refl ;
-      secCong = λ g h → rightInverseCong g h , {!!}})))
+      secCong = λ g h → rightInverseCong g h , λ _ → refl})))
     where rightInverse : (X → Y) → (ℐ X → Y)
           rightInverse g (α x) = g x
           rightInverse g (ext a f cₐ) = fst
