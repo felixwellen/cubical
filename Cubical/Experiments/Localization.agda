@@ -35,4 +35,22 @@ open import Cubical.Experiments.LocalizationTechnicality
   that '(ℐ X → Y) ≃ (X → Y)'. 'ℐ X' is not the localization. 
 -}
 
+{-
+  Goal: Show that ap having a section is the same as Δ_f having a section
+-}
 
+record pullback {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″}
+                (f : A → C) (g : B → C) : Set (ℓ-max ℓ (ℓ-max ℓ′ ℓ″)) where
+  field
+    a : A
+    b : B
+    p : f a ≡ g b
+
+open pullback
+
+private
+  Δ : ∀ {ℓ} {A B : Set ℓ} → (f : A → B) → (A → pullback f f)
+  a (Δ f x) = x
+  b (Δ f x) = x
+  (p (Δ f x)) _ = f x
+  
