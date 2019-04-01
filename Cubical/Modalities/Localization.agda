@@ -9,11 +9,11 @@
 -}
 
 {-# OPTIONS --cubical #-}
-module Cubical.Experiments.Localization where
+module Cubical.Modalities.Localization where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Everything
-open import Cubical.Experiments.LocalizationTechnicality
+open import Cubical.Modalities.LocalizationTechnicality
 
 {-
   Localization at a family of functions, from the modalities paper.

@@ -5,7 +5,7 @@
 -}
 
 {-# OPTIONS --cubical #-}
-module Cubical.Experiments.LocalizationTechnicality where
+module Cubical.Modalities.LocalizationTechnicality where
 
 open import Cubical.Core.Everything
 
