@@ -1,7 +1,7 @@
 {-
   The goal (far from achieved yet...) of this file is to implement the
   construction of localizations from the modalities paper:
-  
+
     https://arxiv.org/abs/1706.07526
 
   A technical part (Lemma 2.7) is in the module 'LocalizationTechnicality',
@@ -31,8 +31,8 @@ open import Cubical.Modalities.LocalizationTechnicality
      ↓   /
     C(a)
 
-  In the 'first-approximation' a HIT 'ℐ X' is constructed, that such 
-  that '(ℐ X → Y) ≃ (X → Y)'. 'ℐ X' is not the localization. 
+  In the 'first-approximation' a HIT 'ℐ X' is constructed, that such
+  that '(ℐ X → Y) ≃ (X → Y)'. 'ℐ X' is not the localization.
 -}
 
 {-
