@@ -35,7 +35,7 @@ open import Cubical.Foundations.Isomorphism
 open import Cubical.Foundations.Univalence
 
 open import Cubical.Data.Empty
-open import Cubical.Data.Nat hiding (_+_ ; +-assoc ; +-comm)
+open import Cubical.Data.Nat renaming (_+_ to _+ℕ_; +-comm to +ℕ-comm; +-assoc to +ℕ-assoc)
 open import Cubical.Data.Bool
 open import Cubical.Data.Sum
 open import Cubical.Data.Int.Base
@@ -220,6 +220,45 @@ ind-assoc _·_ f g p q base m n (suc o) =
 +-assoc : ∀ m n o → m + (n + o) ≡ (m + n) + o
 +-assoc m n (pos o) = ind-assoc _+_ pos sucInt +sucInt refl (λ _ _ → refl) m n o
 +-assoc m n (negsuc o) = ind-assoc _+_ negsuc predInt +predInt refl +predInt m n o
+
+
+-- Multiplication
+-- use names that fitting Cubical.Structure.Ring
+
+_·_ : Int → Int → Int
+pos m · pos n = pos (m * n)
+negsuc m · pos zero = pos zero
+negsuc m · pos (suc n) = negsuc (m * n +ℕ m +ℕ n)
+pos zero · negsuc n = pos zero
+pos (suc m) · negsuc n = negsuc (m * n +ℕ m +ℕ n)
+negsuc m · negsuc n = pos (suc (m * n +ℕ m +ℕ n))
+
+·-lid : ∀ n → 1 · n ≡ n
+·-lid (pos m) = cong pos ((suc zero) * m  ≡⟨ refl ⟩
+                          m +ℕ 0 * zero   ≡⟨ refl  ⟩
+                          m +ℕ 0          ≡⟨ +ℕ-comm m 0 ⟩
+                          m ∎)
+·-lid (negsuc m) = cong negsuc ( 0 * m +ℕ 0 +ℕ m    ≡⟨ cong (λ u → u +ℕ 0 +ℕ m) (*-comm 0 m) ⟩
+                                 m * 0 +ℕ 0 +ℕ m    ≡⟨ cong (λ u → u +ℕ 0 +ℕ m) (sym (0≡m*0 m)) ⟩
+                                 0 +ℕ 0 +ℕ m        ≡⟨ refl ⟩
+                                 0 +ℕ m             ≡⟨ refl ⟩
+                                 m ∎)
+
+·-comm : ∀ m n → m · n ≡ n · m
+·-comm (pos m) (pos n) = cong pos (*-comm m n)
+·-comm (negsuc m) (pos zero) = refl
+·-comm (negsuc m) (pos (suc n)) = {!!}
+·-comm (pos zero) (negsuc n) = refl
+·-comm (pos (suc m)) (negsuc n) = {!!}
+·-comm (negsuc m) (negsuc n) = cong pos (cong suc (m * n +ℕ m +ℕ n   ≡⟨ sym (+ℕ-assoc (m * n) m n) ⟩
+                                                   m * n +ℕ (m +ℕ n) ≡⟨ cong (λ u → m * n +ℕ u) (+ℕ-comm m n) ⟩
+                                                   m * n +ℕ (n +ℕ m) ≡⟨ +ℕ-assoc (m * n) n m ⟩
+                                                   m * n +ℕ n +ℕ m   ≡⟨ cong (λ u → u +ℕ n +ℕ m) (*-comm m n) ⟩
+                                                   n * m +ℕ n +ℕ m   ∎))
+
+·-rid : ∀ n → n · 1 ≡ n
+·-rid n = {!n · 1 ≡⟨ *-comm!}
+
 
 -- Compose sucPathInt with itself n times. Transporting along this
 -- will be addition, transporting with it backwards will be subtraction.
