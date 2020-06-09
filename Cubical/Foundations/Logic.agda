@@ -266,6 +266,14 @@ Decₚ P = Dec [ P ] , isPropDec (isProp[] P)
        (λ y → fst y , inl (snd y))
        (λ z → fst z , inr (snd z))
 
+⊓-⊔-ldistrib : (Q : hProp ℓ) (R : hProp ℓ) (P : hProp ℓ)
+  → (Q ⊔ R) ⊓ P ≡ (Q ⊓ P) ⊔ (R ⊓ P)
+⊓-⊔-ldistrib Q R P = (Q ⊔ R) ⊓ P           ≡⟨ ⊓-comm (Q ⊔ R) P ⟩
+                     P ⊓ (Q ⊔ R)           ≡⟨ ⊓-⊔-distribˡ P Q R ⟩
+                     (P ⊓ Q) ⊔ (P ⊓ R)     ≡⟨ cong (λ u → u ⊔ (P ⊓ R)) (⊓-comm P Q) ⟩
+                     (Q ⊓ P) ⊔ (P ⊓ R)     ≡⟨ cong (λ u → (Q ⊓ P) ⊔ u) (⊓-comm P R) ⟩
+                     (Q ⊓ P) ⊔ (R ⊓ P)     ∎
+
 ⊔-⊓-distribˡ : (P : hProp ℓ) (Q : hProp ℓ')(R : hProp ℓ'')
   → P ⊔ (Q ⊓ R) ≡ (P ⊔ Q) ⊓ (P ⊔ R)
 ⊔-⊓-distribˡ P Q R =
@@ -374,3 +382,99 @@ Subset≃Embedding = isoToEquiv (iso Subset→Embedding Embedding→Subset Embed
 
 Subset≡Embedding : {X : Type ℓ} → ℙ X ≡ (Σ[ A ∈ Type ℓ ] (A ↪ X))
 Subset≡Embedding = ua Subset≃Embedding
+
+
+--------------------------------------------------------------------------------
+-- Prop is a commutative ring (see also Algebra.PropRing)
+
+-- symmetric difference
+_⊕_ : hProp ℓ → hProp ℓ → hProp _
+P ⊕ Q = (P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)
+
+
+prove-⊥ : (P : hProp ℓ-zero) → [ P ⇒ ⊥ ] → P ≡ ⊥
+prove-⊥ P f = ⇒∶ f
+              ⇐∶ λ ()
+
+⊓¬-cancel : (P : hProp ℓ-zero) → (P ⊓ ¬ P ≡ ⊥)
+⊓¬-cancel P = prove-⊥ (P ⊓ ¬ P) λ { (x , f) → f x}
+
+⊔-rid : (P : hProp ℓ-zero) → P ⊔ ⊥  ≡ P
+⊔-rid P = ⇒∶ (elim (λ _ → snd P) (λ {
+                                        (⊎.inl x) → x;
+                                        (⊎.inr ())
+                                      }))
+            ⇐∶ inl
+
+⊔-lid : (P : hProp ℓ-zero) → ⊥ ⊔ P  ≡ P
+⊔-lid P = ⊥ ⊔ P  ≡⟨ ⊔-comm ⊥ P ⟩ P ⊔ ⊥ ≡⟨ ⊔-rid P ⟩  P ∎
+
+⊕-inv : (P : hProp ℓ-zero) → P ⊕ P ≡ ⊥
+⊕-inv P =
+          (P ⊓ ¬ P)  ⊔ (¬ P ⊓ P)  ≡⟨ cong (λ u → u ⊔ (¬ P ⊓ P)) (⊓¬-cancel P) ⟩
+          ⊥  ⊔ (¬ P ⊓ P)          ≡⟨ ⊔-lid _ ⟩
+          ¬ P ⊓ P                 ≡⟨ ⊓-comm (¬ P) P ⟩
+          P ⊓ ¬ P                 ≡⟨ ⊓¬-cancel P ⟩
+          ⊥                       ∎
+
+
+⊕-comm : (P Q : hProp ℓ) → P ⊕ Q ≡ Q ⊕ P
+⊕-comm P Q =
+             (P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)  ≡⟨ ⊔-comm (P ⊓ ¬ Q) (¬ P ⊓ Q) ⟩
+             (¬ P ⊓ Q) ⊔ (P ⊓ ¬ Q)  ≡⟨ cong (λ u → u ⊔ (P ⊓ ¬ Q)) (⊓-comm (¬ P) Q) ⟩
+             (Q ⊓ ¬ P) ⊔ (P ⊓ ¬ Q)  ≡⟨ cong (λ u → (Q ⊓ ¬ P) ⊔ u) (⊓-comm P (¬ Q)) ⟩
+             (Q ⊓ ¬ P) ⊔ (¬ Q ⊓ P)  ∎
+
+
+
+⊓-rid : (P : hProp ℓ) → P ⊓ ⊤ ≡ P
+⊓-rid P = ⇒∶ (λ {(x , tt) → x})
+          ⇐∶ λ x → (x , tt)
+
+module _ where
+  ¬⊥ : ¬ ⊥ ≡ ⊤
+  ¬⊥ = ⇒∶ (λ _ → tt)
+       ⇐∶ λ _ x → x
+
+
+  ⊥-absorb : (P : hProp ℓ-zero) → P ⊓ ⊥ ≡ ⊥
+  ⊥-absorb P = ⇒∶ (λ {(_ , b) → b})
+               ⇐∶ λ ()
+
+⊕-rid : (P : hProp ℓ-zero) → P ⊕ ⊥ ≡ P
+⊕-rid P =
+          (P ⊓ ¬ ⊥)  ⊔ (¬ P ⊓ ⊥)  ≡⟨ cong (λ u → (P ⊓ u)  ⊔ (¬ P ⊓ ⊥)) ¬⊥ ⟩
+          (P ⊓ ⊤)  ⊔ (¬ P ⊓ ⊥)    ≡⟨ cong (λ u → u  ⊔ (¬ P ⊓ ⊥)) (⊓-rid P) ⟩
+          P ⊔ (¬ P ⊓ ⊥)           ≡⟨ cong (λ u → P ⊔ u) (⊥-absorb (¬ P)) ⟩
+          P ⊔ ⊥                   ≡⟨ ⊔-rid P ⟩
+          P ∎
+{-
+⊕⊓-ldist : (P Q R : hProp ℓ-zero) → (P ⊕ Q) ⊓ R ≡ (P ⊓ R) ⊕ (Q ⊓ R)
+⊕⊓-ldist P Q R =
+  ((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊓ R                       ≡⟨ ⊓-⊔-ldistrib
+                                                       (P ⊓ ¬ Q) (¬ P ⊓ Q) R ⟩
+  ((P ⊓ ¬ Q)  ⊓ R) ⊔ ((¬ P ⊓ Q) ⊓ R)                ≡⟨ {!!} ⟩
+
+  ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R) ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)) ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+  ((P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)) ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)) ≡⟨ {!!} ⟩
+  ((P ⊓ R) ⊓ ¬ (Q ⊓ R)) ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R))   ≡⟨ {!!} ⟩
+  ((P ⊓ R) ⊓ ¬ (Q ⊓ R)) ⊔ (¬ (P ⊓ R) ⊓ (Q ⊓ R))     ∎
+  where
+    lemma1 : ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R) ≡ (P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)
+    lemma1 = ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R)     ≡⟨ sym (⊓-⊔-distribˡ _ (¬ Q) (¬ R)) ⟩
+             (P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)                 ∎
+
+⊕-assoc : (P Q R : hProp ℓ-zero) → (P ⊕ Q) ⊕ R ≡ P ⊕ (Q ⊕ R)
+⊕-assoc P Q R = (P ⊕ Q) ⊕ R                                                       ≡⟨ refl ⟩
+                ((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊕ R                                       ≡⟨ refl ⟩
+                (((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊓ ¬ R) ⊔ (¬ ((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊓ R) ≡⟨ {!!} ⟩
+              (¬ P ⊓ Q ⊓ ¬ R) ⊔  (P ⊓ ¬ Q ⊓ ¬ R) ⊔ (¬ ((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊓ R) ≡⟨ {!!} ⟩
+              (¬ P ⊓ Q ⊓ ¬ R) ⊔  (P ⊓ ¬ (Q ⊔ R)) ⊔ (¬ ((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊓ R) ≡⟨ {!!} ⟩
+              
+              (¬ P ⊓ Q ⊓ ¬ R) ⊔  (¬ (P ⊔ Q) ⊓ R) ⊔ (P ⊓ ¬ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ≡⟨ {!!} ⟩
+              (¬ P ⊓ Q ⊓ ¬ R) ⊔  (¬ P ⊓ ¬ Q ⊓ R) ⊔ (P ⊓ ¬ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ≡⟨ {!!} ⟩
+                (P ⊓ ¬ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ⊔ ((¬ P ⊓ Q ⊓ ¬ R) ⊔ (¬ P ⊓ ¬ Q ⊓ R)) ≡⟨ {!!} ⟩
+                (P ⊓ ¬ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ⊔ (¬ P ⊓ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ≡⟨ refl ⟩
+                P ⊕ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))                                       ≡⟨ refl ⟩
+                P ⊕ (Q ⊕ R)                                                       ∎
+-}
