@@ -441,6 +441,7 @@ module _ where
   ⊥-absorb P = ⇒∶ (λ {(_ , b) → b})
                ⇐∶ λ ()
 
+
 ⊕-rid : (P : hProp ℓ-zero) → P ⊕ ⊥ ≡ P
 ⊕-rid P =
           (P ⊓ ¬ ⊥)  ⊔ (¬ P ⊓ ⊥)  ≡⟨ cong (λ u → (P ⊓ u)  ⊔ (¬ P ⊓ ⊥)) ¬⊥ ⟩
@@ -448,6 +449,7 @@ module _ where
           P ⊔ (¬ P ⊓ ⊥)           ≡⟨ cong (λ u → P ⊔ u) (⊥-absorb (¬ P)) ⟩
           P ⊔ ⊥                   ≡⟨ ⊔-rid P ⟩
           P ∎
+
 {-
 ⊕⊓-ldist : (P Q R : hProp ℓ-zero) → (P ⊕ Q) ⊓ R ≡ (P ⊓ R) ⊕ (Q ⊓ R)
 ⊕⊓-ldist P Q R =
@@ -455,15 +457,41 @@ module _ where
                                                        (P ⊓ ¬ Q) (¬ P ⊓ Q) R ⟩
   ((P ⊓ ¬ Q)  ⊓ R) ⊔ ((¬ P ⊓ Q) ⊓ R)                ≡⟨ {!!} ⟩
 
-  ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R) ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)) ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
-  ((P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)) ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)) ≡⟨ {!!} ⟩
+  ((P ⊓ R) ⊓ ¬ Q) ⊔ ((¬ P ⊓ Q) ⊓ R)                 ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ ¬ Q)
+  ⊔ (¬ P ⊓ (Q ⊓ R))                                 ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ ¬ Q)
+  ⊔ ((¬ P ⊓ (Q ⊓ R)) ⊔ ⊥)                           ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ ¬ Q)
+  ⊔ ((¬ P ⊓ (Q ⊓ R)) ⊔ (¬ R ⊓ (Q ⊓ R)))             ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ ¬ Q)
+  ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R))                         ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ ¬ Q)
+  ⊔ ⊥
+  ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R))                         ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ ¬ Q)
+  ⊔ ((P ⊓ R) ⊓ ¬ R)
+  ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R))                         ≡⟨ {!cong (λ u → u ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R)))!} ⟩
+
+    ((P ⊓ R) ⊓ (¬ Q ⊔ ¬ R))
+  ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R))                         ≡⟨ {!!} ⟩
+
   ((P ⊓ R) ⊓ ¬ (Q ⊓ R)) ⊔ ((¬ P ⊔ ¬ R) ⊓ (Q ⊓ R))   ≡⟨ {!!} ⟩
   ((P ⊓ R) ⊓ ¬ (Q ⊓ R)) ⊔ (¬ (P ⊓ R) ⊓ (Q ⊓ R))     ∎
   where
-    lemma1 : ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R) ≡ (P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)
-    lemma1 = ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R)     ≡⟨ sym (⊓-⊔-distribˡ _ (¬ Q) (¬ R)) ⟩
+    i : ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R) ≡ (P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)
+    i = ((P ⊓ R) ⊓ ¬ Q) ⊔ ((P ⊓ R) ⊓ ¬ R)     ≡⟨ sym (⊓-⊔-distribˡ _ (¬ Q) (¬ R)) ⟩
              (P ⊓ R) ⊓ (¬ Q ⊔ ¬ R)                 ∎
-
+{-
+  Is it really that hard? Maybe I missed something...
+  In any case: sorry for the mess, but I really wanted to see that ring structure on prop;)
+-}
 ⊕-assoc : (P Q R : hProp ℓ-zero) → (P ⊕ Q) ⊕ R ≡ P ⊕ (Q ⊕ R)
 ⊕-assoc P Q R = (P ⊕ Q) ⊕ R                                                       ≡⟨ refl ⟩
                 ((P ⊓ ¬ Q) ⊔ (¬ P ⊓ Q)) ⊕ R                                       ≡⟨ refl ⟩
@@ -477,4 +505,5 @@ module _ where
                 (P ⊓ ¬ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ⊔ (¬ P ⊓ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))) ≡⟨ refl ⟩
                 P ⊕ ((Q ⊓ ¬ R) ⊔ (¬ Q ⊓ R))                                       ≡⟨ refl ⟩
                 P ⊕ (Q ⊕ R)                                                       ∎
+
 -}
