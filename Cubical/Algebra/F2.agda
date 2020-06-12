@@ -1,7 +1,6 @@
 {-# OPTIONS --cubical --safe #-}
 
-module Cubical.Structures.RingExamples where
-
+module Cubical.Algebra.F2 where
 
 open import Cubical.Foundations.Everything
 open import Cubical.Foundations.HLevels
@@ -11,27 +10,6 @@ open import Cubical.Structures.Ring
 open import Cubical.Structures.QuotientRing
 open import Cubical.Data.Unit
 open import Cubical.Data.Bool
-
-ZeroRing : Ring {ℓ-zero}
-ZeroRing = createRing
-             Unit
-             (isProp→isOfHLevelSuc 1 isPropUnit)
-             (record
-                { ₀ = tt
-                ; ₁ = tt
-                ; _+_ = λ _ _ → tt
-                ; -_ = λ _ → tt
-                ; _·_ = λ _ _ → tt
-                ; +-assoc = λ _ _ _ → refl
-                ; +-rid = λ _ → refl
-                ; +-comm = λ _ _  → refl
-                ; +-rinv = λ _  → refl
-                ; ·-assoc = λ _ _ _ → refl
-                ; ·-lid = λ _ → refl
-                ; ·-rid = λ _ → refl
-                ; ldist = λ _ _ _ → refl
-                ; rdist = λ _ _ _ → refl
-                })
 
 module _ where
   xor : Bool → Bool → Bool
@@ -119,8 +97,8 @@ module _ where
        Bool
        isSetBool
        (record
-          { ₀ = false
-          ; ₁ = true
+          { 0r = false
+          ; 1r = true
           ; _+_ = xor
           ; -_ = λ x → x
           ; _·_ = and
