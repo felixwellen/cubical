@@ -37,6 +37,12 @@ record IsGroup {G : Type ℓ}
   invr : (x : G) → x + (- x) ≡ 0g
   invr x = inverse x .fst
 
+η-isGroup' : {G : Type ℓ} {0g : G} {_+_ :  G → G → G} { -_ :  G → G}
+             (is-group : IsGroup 0g _+_ -_)
+          → isgroup (IsGroup.isMonoid is-group) (IsGroup.inverse is-group) ≡ is-group
+IsGroup.isMonoid (η-isGroup' is-group i) = IsGroup.isMonoid is-group
+IsGroup.inverse  (η-isGroup' is-group i) = IsGroup.inverse is-group
+
 η-isGroup : {G : Type ℓ} {0g 0g' : G} {_+_ _+'_  : G → G → G} { -_ -'_  : G → G}
          → 0g ≡ 0g'
          → _+_ ≡ _+'_

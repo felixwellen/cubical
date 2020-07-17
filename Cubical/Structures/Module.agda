@@ -105,18 +105,14 @@ record LeftModuleEquiv {R : Ring {ℓ}} (M N : LeftModule R) : Type ℓ where
 
   constructor moduleiso
 
-  instance
-    _ : LeftModule R
-    _ = M
-    _ : LeftModule R
-    _ = N
-
-  open LeftModule {{...}}
+  private
+    module M = LeftModule M
+    module N = LeftModule N
 
   field
     e : ⟨ M ⟩ ≃ ⟨ N ⟩
-    isHom+ : (x y : ⟨ M ⟩) → equivFun e (x + y) ≡ equivFun e x + equivFun e y
-    comm⋆ : (r : ⟨ R ⟩r) (x : ⟨ M ⟩) → equivFun e (r ⋆ x) ≡ r ⋆ equivFun e x
+    isHom+ : (x y : ⟨ M ⟩) → equivFun e (x M.+ y) ≡ equivFun e x N.+ equivFun e y
+    comm⋆ : (r : ⟨ R ⟩r) (x : ⟨ M ⟩) → equivFun e (r M.⋆ x) ≡ r N.⋆ equivFun e x
 
 module LeftModuleΣTheory (R : Ring {ℓ}) where
 
@@ -174,9 +170,9 @@ module LeftModuleΣTheory (R : Ring {ℓ}) where
        (ismodule isAbGroup ⋆-assoc ⋆-ldist ⋆-rdist ⋆-lid)
 
   LeftModuleEquivStrLeftModuleΣ : Iso (LeftModule R) LeftModuleΣ
-  LeftModuleEquivStrLeftModuleΣ = iso LeftModule→LeftModuleΣ LeftModuleΣ→LeftModule
-                                 (λ _ → refl) (λ _ → refl)
-
+  LeftModuleEquivStrLeftModuleΣ =
+    iso LeftModule→LeftModuleΣ LeftModuleΣ→LeftModule
+        (λ _ → refl) (λ _ → refl)
 
   leftModuleUnivalentStr : UnivalentStr LeftModuleStructure LeftModuleEquivStr
   leftModuleUnivalentStr = axiomsUnivalentStr _ isPropLeftModuleAxioms RawLeftModuleUnivalentStr

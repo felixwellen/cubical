@@ -90,6 +90,25 @@ AbGroupHom G H = GroupHom (AbGroup→Group G) (AbGroup→Group H)
 AbGroupEquiv : (G : AbGroup {ℓ}) (H : AbGroup {ℓ'}) → Type (ℓ-max ℓ ℓ')
 AbGroupEquiv G H = GroupEquiv (AbGroup→Group G) (AbGroup→Group H)
 
+
+η-isAbGroup : {G : Type ℓ}
+            {0g : G} {_+_ : G → G → G} { -_ : G → G}
+            (p : IsAbGroup 0g _+_ -_)
+            → isabgroup (IsAbGroup.isGroup p) (IsAbGroup.comm p) ≡ p
+IsGroup.isMonoid (IsAbGroup.isGroup (η-isAbGroup p i)) =
+  η-isMonoid (IsGroup.isMonoid (IsAbGroup.isGroup p)) i
+IsGroup.inverse (IsAbGroup.isGroup (η-isAbGroup p i)) =
+  IsGroup.inverse (IsAbGroup.isGroup p)
+IsAbGroup.comm    (η-isAbGroup p i) = IsAbGroup.comm p
+
+
+{-
+η-isAbGroup : {G : Type ℓ}
+            {0g 0g' : G} {_+_ _+'_ : G → G → G} { -_ -'_ : G → G}
+            → 0g ≡ 0g'
+            → _+_ ≡ _+'_
+            → IsAbGroup 0g _+_
+-}
 module AbGroupΣTheory {ℓ} where
 
   open GroupΣTheory
@@ -137,11 +156,15 @@ module AbGroupΣTheory {ℓ} where
     0g (helper2 a i) = 0g a
     _+_ (helper2 a i) = _+_ a
     - helper2 a i = - a
+    isAbGroup (helper2 a i) = η-isAbGroup (isAbGroup a) i
+
+{-
     IsGroup.isMonoid (IsAbGroup.isGroup (isAbGroup (helper2 a i))) = η-isMonoid (isMonoid a) i
     IsGroup.inverse (IsAbGroup.isGroup (isAbGroup (helper2 a i))) = inverse a
-    IsAbGroup.comm (isAbGroup (helper2 a i)) = comm a
 
+-}
     -- TODO: investigate why we need all of the qualified projections
+    -- DONE: we need it because of the 'no-eta-equality' in IsGroup
 
   abGroupUnivalentStr : UnivalentStr AbGroupStructure AbGroupEquivStr
   abGroupUnivalentStr = axiomsUnivalentStr _ isPropAbGroupAxioms rawGroupUnivalentStr

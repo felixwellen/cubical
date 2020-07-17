@@ -100,7 +100,7 @@ makeIsRing : {R : Type ℓ} {0r 1r : R} {_+_ _·_ : R → R → R} { -_ : R → 
              (+-rid : (x : R) → x + 0r ≡ x)
              (+-rinv : (x : R) → x + (- x) ≡ 0r)
              (+-comm : (x y : R) → x + y ≡ y + x)
-             (+-assoc : (x y z : R) → x · (y · z) ≡ (x · y) · z)
+             (·-assoc : (x y z : R) → x · (y · z) ≡ (x · y) · z)
              (·-rid : (x : R) → x · 1r ≡ x)
              (·-lid : (x : R) → 1r · x ≡ x)
              (·-rdist-+ : (x y z : R) → x · (y + z) ≡ (x · y) + (x · z))
